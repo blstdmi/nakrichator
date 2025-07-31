@@ -9,22 +9,21 @@
     <p style="transform: skew(15deg,-15deg);">И</p>
     <p style="transform: skew(15deg,-15deg);">ЧАТОР</p></caption> -->
     <caption>
-      <svg xmlns="http://www.w3.org/2000/svg"     width="90vw" height="50vh"  >
-
-
-     <text text-anchor="middle" x="35vw" y="7vw" font-family="Times New Roman" font-size="10vw" >
-        НАКРИЧАТОР
-      </text>
-
-      <path id="SunCatcherStudio" fill="none" stroke="#000000" d="M 32.550491,148.48008 A -108.15144,-108.15144 0 0 1 140.70194,40.328644 -108.15144,-108.15144 0 0 1 248.85338,148.48008 -108.15144,-108.15144 0 0 1 140.70194,256.63153 -108.15144,-108.15144 0 0 1 32.550491,148.48008 Z" />  
-<text font-size="30" fill="#000000" letter-spacing="2" font-family="sans-serif" font-weight="bold">
-<textPath xlink:href="#SunCatcherStudio" side="left" startOffset="5">НАКРИЧАТОР</textPath></text>
-
-<path id="SunCatcherStudio2" fill="none" stroke="none"         d="M 55.550491,148.48008 A -108.15144,-108.15144 0 0 1 140.70194,40.328644 -108.15144,-108.15144 0 0 1 248.85338,148.48008 -108.15144,-108.15144 0 0 1 140.70194,256.63153 -108.15144,-108.15144 0 0 1 32.550491,148.48008 Z"></path>
-<text font-size="30" fill="#000000" letter-spacing="2" font-family="sans-serif" font-weight="bold">
-  <textPath xlink:href="#SunCatcherStudio2" side="left" startOffset="5">YOUR&nbsp;TEXT&nbsp;HERE</textPath></text>
-  </svg>
-
+      <svg xmlns="http://www.w3.org/2000/svg"     width="100vw" height="100vh"  viewBox="0 0 300 300">
+      <path id="SunCatcherStudio2" fill="none" stroke="none"  d="M2,5 C20,80 190,80 190,4"></path>
+      <text font-size="30" fill="white" letter-spacing="2" font-family="sans-serif" font-weight="bold">
+        <textPath xlink:href="#SunCatcherStudio2" side="left" startOffset="5">   <tspan fill="#FF0000">Н</tspan>
+      <tspan fill="#FF7F00">А</tspan>
+      <tspan fill="#FFFF00">К</tspan>
+      <tspan fill="#00FF00">Р</tspan>
+      <tspan fill="#0000FF">И</tspan>
+      <tspan fill="#4B0082">Ч</tspan>
+      <tspan fill="#9400D3">А</tspan>
+      <tspan fill="#FF1493">Т</tspan>
+      <tspan fill="#00BFFF">О</tspan>
+      <tspan fill="#32CD32">Р</tspan></textPath></text>
+      
+        </svg>
     </caption>
 </header>
 </template>
