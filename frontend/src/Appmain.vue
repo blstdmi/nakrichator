@@ -8,8 +8,8 @@
     <p style="transform: skew(15deg,-15deg);">НАКР</p>
     <p style="transform: skew(15deg,-15deg);">И</p>
     <p style="transform: skew(15deg,-15deg);">ЧАТОР</p></caption> -->
-    <caption>
-      <svg xmlns="http://www.w3.org/2000/svg"     width="100vw" height="100vh"  viewBox="0 0 300 300">
+    <caption  style="left:20%; top:0px;position: absolute; font-size: 10vw; pointer-events: none;">
+      <svg xmlns="http://www.w3.org/2000/svg"     width="60vw" height="50vh"  viewBox="0 0 200 100">
       <path id="SunCatcherStudio2" fill="none" stroke="none"  d="M2,5 C20,80 190,80 190,4"></path>
       <text font-size="30" fill="white" letter-spacing="2" font-family="sans-serif" font-weight="bold">
         <textPath xlink:href="#SunCatcherStudio2" side="left" startOffset="5">   <tspan fill="#FF0000">Н</tspan>
