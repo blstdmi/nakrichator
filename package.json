@@ -1,0 +1,15 @@
+{
+  "name": "nakrihator",
+  "version": "1.0.1",
+  "description": "kanban eventbus-loop",
+  "main": "index.js",
+  "scripts": {
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd serverpython && uvicorn main:app --reload",
+    "build": "cd frontend && npm run build",
+    "serve": "cd serverpython && uvicorn main:app",
+    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\""
+  },
+  "author": "",
+  "license": "ISC"
+}
