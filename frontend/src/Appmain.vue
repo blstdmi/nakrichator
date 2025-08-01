@@ -123,8 +123,6 @@ function saycommand_showmenu(userid=undefined){
     <img src="./assets/man1.svg"></img>
     <img src="./assets/man2.svg"></img>
     <img src="./assets/man3.svg"></img>
-
-
   </section>
 </footer>
 </template>
