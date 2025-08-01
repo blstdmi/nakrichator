@@ -14,18 +14,6 @@ const sharedData = {
     { group: 'C',id: 3, name: 'Иван', message: "меньшее в низ" }
   ]),
   
-/* можно было использовать 3 группы решил объеденить..
-  products: ref([
-    { id: 4, name: 'Ноутбук', message: 999 },
-    { id: 5, name: 'Телефон', message: 699 },
-    { id: 6, name: 'Наушники', message: 199 }
-  ]),
-  
-  tasks: ref([
-    { id: 7, title: 'Изучить Vue 3', message: false },
-    { id: 8, title: 'Создать проект', message: true },
-    { id: 9, title: 'Развернуть на сервере', message: false }
-  ]) */
 }
 
 export function useSharedData() {

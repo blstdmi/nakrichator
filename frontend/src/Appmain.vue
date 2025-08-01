@@ -5,18 +5,35 @@ import HelloWorld from './components/CardElement.vue'
 <script>
 import { useSharedData } from './composables/useStoreSection.js'
 const { users, products, tasks } = useSharedData()
-/* export default defineComponent({
+//const groups = computed(() => [...new Set(users.value.map(u => u.group))]) наверное надо бы для групп
 
-  setup() {
-    const { users, products, tasks } = useSharedData()
-    
-    return {
-      users,
-      products,
-      tasks
-    }
-  },
-}) */
+let draggedItem = null;
+
+function dragStart(event, user) {
+  draggedItem = user;
+  event.dataTransfer.setData('text/plain', user.id);
+  event.currentTarget.style.opacity = '0.4';
+}
+
+function dragEnd(event) {
+  event.currentTarget.style.opacity = '1';
+}
+
+function dragOver(event) {
+  event.preventDefault();
+  event.dataTransfer.dropEffect = 'move';
+}
+
+function drop(event, targetGroup) {
+  console.log(event, targetGroup)
+  event.preventDefault();
+  if (draggedItem) {
+    // Обновляем группу перетаскиваемого пользователя
+    draggedItem.group = targetGroup;
+    // Сбрасываем draggedItem
+    draggedItem = null;
+  }
+}
 </script>
 
 
@@ -26,11 +43,12 @@ const { users, products, tasks } = useSharedData()
     <p style="transform: skew(15deg,-15deg);">НАКР</p>
     <p style="transform: skew(15deg,-15deg);">И</p>
     <p style="transform: skew(15deg,-15deg);">ЧАТОР</p></caption> -->
-    <caption  style="left:20%; top:0px;position: absolute; font-size: 10vw; pointer-events: none;">
+    <caption  style="left:20%; top:0px;position: absolute; font-size: 10vw; pointer-events: none; opacity: 0.7;">
       <svg xmlns="http://www.w3.org/2000/svg"     width="60vw" height="50vh"  viewBox="0 0 200 100">
       <path id="SunCatcherStudio2" fill="none" stroke="none"  d="M2,5 C20,80 190,80 190,4"></path>
       <text font-size="30" fill="white" letter-spacing="2" font-family="sans-serif" font-weight="bold">
-        <textPath xlink:href="#SunCatcherStudio2" side="left" startOffset="5">   <tspan fill="#FF0000">Н</tspan>
+        <textPath xlink:href="#SunCatcherStudio2" side="left" startOffset="5">   
+      <tspan fill="#FF0000">Н</tspan>
       <tspan fill="#FF7F00">А</tspan>
       <tspan fill="#FFFF00">К</tspan>
       <tspan fill="#00FF00">Р</tspan>
@@ -44,40 +62,51 @@ const { users, products, tasks } = useSharedData()
     </caption>
 </header>
 <main class="flex" style="color:black">
-<section>
-  <h>A</h>
-  <article v-for="user in users" :key="user.id">
-    <span>{{ user.name }}</span> <span>{{user.id}}</span>
-    <p>{{ user.message }}</p>
-  </article>
-</section>
-<section>
-  <h>B</h>
-  <article v-for="user in users" :key="user.id">
-    <span>{{ user.name }}</span> <span>{{user.id}}</span>
-    <p>{{ user.message }}</p>
-  </article>
-</section>
-<section>
-  <h>C</h>
-  <article v-for="user in users" :key="user.id">
+<section v-for="(col, index) in ['A', 'B', 'C']" :key="index" 
+@dragover="dragOver" 
+@drop="drop($event, col)">
+  <h>{{ col }}</h>
+  <article v-for="user in users.filter(u => u.group === col)" :key="user.id"
+    draggable="true" 
+    
+    @dragstart="dragStart($event, user)"
+    @dragend="dragEnd($event)" 
+    >
     <span>{{ user.name }}</span> <span>{{user.id}}</span>
     <p>{{ user.message }}</p>
   </article>
 </section>
 
+
 </main>
+
 </template>
 
 <style scoped>
 .flex {
   display: flex;
+  width: 100%;
   flex-flow: row nowrap;
   justify-content: space-between;
-  flex-grow: 1;
-  align-items: stretch
-}
-section {
   
 }
+section {
+  margin: 1vw;
+  flex: 1; 
+  min-width: 0; 
+  padding: 16px;
+}
+article {
+  margin: 1vw;
+  flex: 1; 
+  min-width: 0; 
+  padding: 16px;
+  border-radius: 8px;
+  background-color: aquamarine;
+}
+/* article[draggable=true] {
+  cursor: move;
+} 
+ v-on:dragover="dragover"
+ */
 </style>
