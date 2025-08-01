@@ -27,28 +27,43 @@ async function bustask(say) {
   
   try {
     // Создаем URL с параметрами
+    let inputString = "";
     //const timestamp = getTimeStampInMsW();
     const isPreformatted_ADD = /^\d+\*доб/.test(say);
-    const [timestampPart, dataPart] = say.split('*доб');
+    const isPreformatted_DEL = /^\d+\*дел/.test(say);
 
-    // Проверяем timestamp
-    const timestamp = parseInt(timestampPart);
-    if (isNaN(timestamp)) {
-      throw new Error('Неверный формат timestamp');
+    if (isPreformatted_ADD){
+      const [timestampPart, dataPart] = say.split('*доб');
+
+      // Проверяем timestamp
+      const timestamp = parseInt(timestampPart);
+      if (isNaN(timestamp)) {
+        throw new Error('Неверный формат timestamp');
+      }
+
+      // Разбираем оставшуюся часть (name group message)
+      const dataParts = dataPart.split(' ');
+      if (dataParts.length < 2) {
+        throw new Error('Недостаточно данных после "*доб"');
+      }
+
+      // Извлекаем name, group и message (все что после group)
+      const name = dataParts[0];
+      const group = dataParts[1];
+      const message = dataParts.slice(2).join(' ') || ''; // Объединяем оставшиеся части
+      
+      inputString = `${timestamp}*доб${name} ${group} ${message}`;
     }
+    if (isPreformatted_DEL){
+      const [timestampPart, dataPart] = say.split('*дел');
 
-    // Разбираем оставшуюся часть (name group message)
-    const dataParts = dataPart.split(' ');
-    if (dataParts.length < 2) {
-      throw new Error('Недостаточно данных после "*доб"');
+      // Проверяем timestamp
+      const timestamp = parseInt(timestampPart);
+      if (isNaN(timestamp)) {
+        throw new Error('Неверный формат timestamp');
+      }
+      inputString = `${timestamp}*дел`;
     }
-
-    // Извлекаем name, group и message (все что после group)
-    const name = dataParts[0];
-    const group = dataParts[1];
-    const message = dataParts.slice(2).join(' ') || ''; // Объединяем оставшиеся части
-    
-    const inputString = `${timestamp}*доб${name} ${group} ${message}`;
     const encodedString = encodeURIComponent(inputString);
     const url = webserverip+`/api/parse?input_string=${encodedString}`;
     

@@ -1,9 +1,11 @@
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware  # Добавляем импорт
-from fastapi.responses import FileResponse, RedirectResponse
+from fastapi.responses import FileResponse, RedirectResponse, StreamingResponse
 import os
 import httpx
+import asyncio
+import json
 from pydantic import BaseModel
 
 app = FastAPI()
@@ -63,7 +65,7 @@ async def parse_message(input_string: str):
         # Разделяем timestamp и остальную часть
         #timestamp, rest = input_string.split('*', 1)
         timestamp_part, rest = input_string.split('*', 1)
-        timestamp = float(timestamp_part)
+        timestamp = int(timestamp_part)#float(timestamp_part)
         
         # Разбираем остальную часть: команда, username, группа, сообщение
         parts = rest.split(maxsplit=3)
@@ -71,6 +73,10 @@ async def parse_message(input_string: str):
             raise ValueError("Недостаточно частей в строке после timestamp")
         
         name_command = parts[0][:3]  # "доб"
+
+        if name_command == "дел":
+            #if database.has(timestamp_part):
+            del database[int(timestamp_part)]
 
         if name_command == "доб":
 
@@ -101,15 +107,41 @@ async def parse_message(input_string: str):
             database[timestamp]=username,group_name,message
             return "данные добавлены"
         
+        #if name_command == "мов":
+        # удалить и добавить или просто обновить. по id
+
         return "ошибка команды"
         
     except Exception as e:
         return {"error": f"Ошибка парсинга: {str(e)}", "input": input_string}
     
+# @app.get("/api/newdata")
+# async def longpool():
+#     #all data, наверное можно было заморочится, но данных мало.
+#     return database
+
 @app.get("/api/newdata")
-async def longpool():
-    #all data, наверное можно было заморочится, но данных мало.
-    return database
+async def sse_endpoint():
+    async def event_generator():
+        last_data = None
+        while True:
+            current_data = database.copy()
+            
+            # Отправляем данные только если они изменились
+            if current_data != last_data:
+                last_data = current_data
+                yield f"data: {json.dumps(current_data)}\n\n"
+            
+            await asyncio.sleep(1)  # Проверяем изменения каждую секунду
+
+    return StreamingResponse(
+        event_generator(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+        }
+    )
 
 @app.api_route("/{path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"])
 async def catch_all(request: Request, path: str):

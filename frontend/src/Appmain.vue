@@ -65,7 +65,7 @@ function saycommand_showmenu(userid=undefined){
     <p style="transform: skew(15deg,-15deg);">НАКР</p>
     <p style="transform: skew(15deg,-15deg);">И</p>
     <p style="transform: skew(15deg,-15deg);">ЧАТОР</p></caption> -->
-    <caption  style="left:20%; top:0px;position: absolute; font-size: 10vw; pointer-events: none; opacity: 0.7;">
+    <caption  style="left:20%; bottom:0px;position: absolute; font-size: 10vw; pointer-events: none; opacity: 0.7;">
       <svg xmlns="http://www.w3.org/2000/svg"     width="60vw" height="50vh"  viewBox="0 0 200 100">
       <path id="SunCatcherStudio2" fill="none" stroke="none"  d="M2,5 C20,80 190,80 190,4"></path>
       <text font-size="30" fill="white" letter-spacing="2" font-family="sans-serif" font-weight="bold">
@@ -107,7 +107,7 @@ function saycommand_showmenu(userid=undefined){
     <menu v-show="saycommand_show">
       <h5>** Всплывашка с набором комманд **</h5>
       <button @click="saycommand_input_val = ''+timeStampInMs()+'*доб'+ 'test' + ' '+ 'A' +' ' + 'ТЕКСТ'">Создать новую плитку</button>
-      <button>Удалить плитку</button>
+      <button @click="saycommand_input_val = Number(saycommand_input_val)+'*дел'">Удалить плитку</button>
       <p>тут могла быть твоя кнопка если закинеш донат.</p>
       <p>(Удалить) id*дел</p>
       <p>(Добавить id имя группа текст) id*доб тест А Текст</p>
@@ -117,6 +117,14 @@ function saycommand_showmenu(userid=undefined){
      @keydown.enter="()=>{bustask(saycommand_input_val);saycommand_input_val=''}"
      ></input>
      
+  </section>
+
+  <section class="people-message">
+    <img src="./assets/man1.svg"></img>
+    <img src="./assets/man2.svg"></img>
+    <img src="./assets/man3.svg"></img>
+
+
   </section>
 </footer>
 </template>
@@ -141,7 +149,7 @@ article {
   min-width: 0; 
   padding: 16px;
   border-radius: 8px;
-  background-color: aquamarine;
+  background-color: burlywood;
 }
 /* article[draggable=true] {
   cursor: move;
@@ -159,4 +167,15 @@ article {
 .saycommand-root input{
   width:300px;
 } 
+.people-message {
+  pointer-events: none;
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
+
+}
 </style>
