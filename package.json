@@ -8,7 +8,7 @@
     "dev:backend": "cd serverpython && uvicorn main:app --reload",
     "build": "cd frontend && npm run build",
     "serve": "cd serverpython && uvicorn main:app",
-    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\""
+    "devnotused": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\""
   },
   "author": "",
   "license": "ISC"
