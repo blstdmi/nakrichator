@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 
-const webserverip = 'http://127.0.0.1:8000';
+const webserverip = 'http://localhost:8000';
 
 // Общие данные, доступные всем компонентам
 const sharedData = {
@@ -114,23 +114,59 @@ function getTimeStampInMsW() {
     window.performance.timing.navigationStart
   );
   
-  return isPerformanceSupported ? 
+  return parseInt(isPerformanceSupported ? 
     window.performance.now() + window.performance.timing.navigationStart :
-    Date.now();
+    Date.now());
 }
 
 
 const eventSource = new EventSource(webserverip+'/api/newdata');
 
 eventSource.onmessage = (e) => {
-  //{"17540547599719.0":["test","A","ТЕ5КСТ"],"17540543599719.0":["test","A","ТЕ5КСТ"]}
-  console.log('Новое сообщение:', e.data);
+  try {
+    // Парсим данные с сервера
+    const serverData = JSON.parse(e.data);
+    console.log('Новые данные с сервера:', serverData);
+
+    // Преобразуем данные сервера в массив пользователей
+    const serverUsers = Object.entries(serverData).map(([id, [name, group, message]]) => ({
+      id: parseInt(parseFloat(id)), // Убираем .0 и преобразуем в целое число
+      name,
+      group,
+      message
+    }));
+
+    // Получаем текущих пользователей
+    const currentUsers = [...sharedData.users.value];
+
+    // 1. Обновляем существующих пользователей
+    serverUsers.forEach(serverUser => {
+      const existingIndex = currentUsers.findIndex(u => u.id === serverUser.id);
+      if (existingIndex !== -1) {
+        currentUsers[existingIndex] = { ...currentUsers[existingIndex], ...serverUser };
+      } else {
+        currentUsers.push(serverUser);
+      }
+    });
+
+    // 2. Опционально: удаляем пользователей, которых нет на сервере
+    // const updatedUsers = currentUsers.filter(user => 
+    //   serverUsers.some(serverUser => serverUser.id === user.id)
+    // );
+
+    // Обновляем реактивные данные
+    sharedData.users.value = currentUsers;
+    console.log('Данные успешно обновлены');
+
+  } catch (error) {
+    console.error('Ошибка обработки данных SSE:', error);
+  }
 };
 
 eventSource.onerror = () => {
   console.error('Ошибка SSE. Переподключение...');
   eventSource.close();
-  setTimeout(() => longPoll(url), 1000);
+  setTimeout(() =>{ new EventSource(webserverip + '/api/newdata')}, 1000);
 };
 
 // как store

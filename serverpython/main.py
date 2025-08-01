@@ -1,11 +1,21 @@
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware  # Добавляем импорт
 from fastapi.responses import FileResponse, RedirectResponse
 import os
 import httpx
 from pydantic import BaseModel
 
 app = FastAPI()
+
+# Добавляем CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Разрешаем все домены
+    allow_credentials=True,
+    allow_methods=["*"],  # Разрешаем все HTTP методы
+    allow_headers=["*"],  # Разрешаем все заголовки
+)
 
 # Проверяем режим работы (production/development)
 IS_PROD = os.path.exists("../frontend/dist")

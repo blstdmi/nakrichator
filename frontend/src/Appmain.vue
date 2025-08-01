@@ -113,7 +113,9 @@ function saycommand_showmenu(userid=undefined){
       <p>(Добавить id имя группа текст) id*доб тест А Текст</p>
     </menu>
     <input ref="saycomand" placeholder="| Что нужно?" v-model="saycommand_input_val"
-     @change.lazy="()=>{bustask(saycommand_input_val);saycommand_input_val=''}"></input>
+     @change.lazy="()=>{bustask(saycommand_input_val);saycommand_input_val=''}"
+     @keydown.enter="()=>{bustask(saycommand_input_val);saycommand_input_val=''}"
+     ></input>
      
   </section>
 </footer>
