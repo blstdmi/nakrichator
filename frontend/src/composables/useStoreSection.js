@@ -16,9 +16,37 @@ const sharedData = {
   
 }
 
-export function useSharedData() {
+// Вброс в шину действий
+//**
+// * 'name':'test','group':'?','id':timestamp,'message':val
+// */
+async function bustask(say){
+ console.log(say)
+  fetch()
+}
+
+
+
+//id 
+function getTimeStampInMsW() {
+  var isPerformanceSupported = (
+    window.performance &&
+    window.performance.now &&
+    window.performance.timing &&
+    window.performance.timing.navigationStart
+  );
+  
+  return isPerformanceSupported ? 
+    window.performance.now() + window.performance.timing.navigationStart :
+    Date.now();
+}
+
+// как store
+export function useSharedData() { 
   return {
     ...sharedData,
+    bustask,
+    timeStampInMs:getTimeStampInMsW
     //addUser,
     //addProduct,
     //toggleTask

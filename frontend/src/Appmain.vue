@@ -4,11 +4,12 @@ import HelloWorld from './components/CardElement.vue'
 
 <script>
 import { useSharedData } from './composables/useStoreSection.js'
-const { users, products, tasks } = useSharedData()
+import {ref} from 'vue'
+const { users, bustask, timeStampInMs } = useSharedData()
 //const groups = computed(() => [...new Set(users.value.map(u => u.group))]) наверное надо бы для групп
 
+//------------
 let draggedItem = null;
-
 function dragStart(event, user) {
   draggedItem = user;
   event.dataTransfer.setData('text/plain', user.id);
@@ -33,6 +34,26 @@ function drop(event, targetGroup) {
     // Сбрасываем draggedItem
     draggedItem = null;
   }
+}
+
+
+
+//------------
+const saycommand_input_val = ref("");
+//const saycommand_userid = ref();
+const saycommand_show = ref(false);
+
+//** меню - это блог быстрые команды 
+// баг debounce, если ховер то не надо закрывать */
+function saycommand_showmenu(userid=undefined){
+
+  saycommand_show.value = true;
+  if ( !isNaN(Number(userid)) ){
+    saycommand_input_val.value=userid;
+  }
+
+
+  setTimeout(i=> saycommand_show.value  = false,1000*6)
 }
 </script>
 
@@ -62,11 +83,12 @@ function drop(event, targetGroup) {
     </caption>
 </header>
 <main class="flex" style="color:black">
+
 <section v-for="(col, index) in ['A', 'B', 'C']" :key="index" 
 @dragover="dragOver" 
 @drop="drop($event, col)">
-  <h>{{ col }}</h>
-  <article v-for="user in users.filter(u => u.group === col)" :key="user.id"
+  <h5>{{ col }}</h5>
+  <article v-for="user in users.filter(u => u.group === col)" :key="user.id" @click="saycommand_showmenu(user.id)"
     draggable="true" 
     
     @dragstart="dragStart($event, user)"
@@ -77,9 +99,23 @@ function drop(event, targetGroup) {
   </article>
 </section>
 
-
 </main>
 
+<footer>
+  <section class="saycommand-root" @click="saycommand_showmenu">
+    <menu v-show="saycommand_show">
+      <h5>** Всплывашка с набором комманд **</h5>
+      <button @click="saycommand_input_val = ''+timeStampInMs()+'*доб'+ 'test' + ' '+ 'A' +' ' + 'ТЕКСТ'">Создать новую плитку</button>
+      <button>Удалить плитку</button>
+      <p>тут могла быть твоя кнопка если закинеш донат.</p>
+      <p>(Удалить) id*дел</p>
+      <p>(Добавить id имя группа текст) id*доб тест А Текст</p>
+    </menu>
+    <input ref="saycomand" placeholder="| Что нужно?" v-model="saycommand_input_val"
+     @change.lazy="()=>{bustask(saycommand_input_val);saycommand_input_val=''}"></input>
+     
+  </section>
+</footer>
 </template>
 
 <style scoped>
@@ -109,4 +145,15 @@ article {
 } 
  v-on:dragover="dragover"
  */
+
+.saycommand-root {
+  position:fixed;
+  bottom:0;
+}
+.saycommand-root button {
+  padding:5px;
+}
+.saycommand-root input{
+  width:300px;
+} 
 </style>
