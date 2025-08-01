@@ -1,32 +1,25 @@
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
-from pydantic import BaseModel
+from fastapi.responses import FileResponse, RedirectResponse
 import os
+import httpx
+from pydantic import BaseModel
 
 app = FastAPI()
 
-# В продакшене мы будем монтировать статику из собранного фронтенда
-if os.path.exists("../frontend/dist"):
-    print("Serve have build-->> run")
-    app.mount("/static", StaticFiles(directory="../frontend/dist/assets"), name="static")
+# Проверяем режим работы (production/development)
+IS_PROD = os.path.exists("../frontend/dist")
+print(f"Starting in {'PRODUCTION' if IS_PROD else 'DEVELOPMENT'} mode")
+
+if IS_PROD:
+    print("Mounting production frontend files")
+    app.mount("/assets", StaticFiles(directory="../frontend/dist/assets"), name="assets")
     app.mount("/", StaticFiles(directory="../frontend/dist", html=True), name="frontend")
 
 @app.get("/api/hello")
 async def hello():
+    print("Hello endpoint called")
     return {"message": "Hello from Python backend!"}
-
-# Для разработки - проксируем запросы к Vite серверу
-@app.api_route("/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
-async def catch_all(request: Request, path: str):
-    if "frontend" in app.mounts:  # В продакшене
-        print("frontend run dist index")
-        return FileResponse("../frontend/dist/index.html")
-    print("local?")
-    
-    # В разработке можно проксировать запросы к Vite (но лучше разделять серверы)
-    return {"detail": "Not found in production mode"}
-
 
 
 class ParsedMessage(BaseModel):
@@ -54,6 +47,7 @@ async def parse_message(input_string: str):
     - A - group_name (буква или слово)
     - ТЕКСТ - message (остальной текст)
     """
+    print("Custom /api/parse handler called")
     try:
         # Разделяем timestamp и остальную часть
         timestamp_part, rest = input_string.split('*', 1)
@@ -85,3 +79,44 @@ async def parse_message(input_string: str):
         
     except Exception as e:
         return {"error": f"Ошибка парсинга: {str(e)}", "input": input_string}
+
+
+@app.api_route("/{path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"])
+async def catch_all(request: Request, path: str):
+    print(f"\n=== NEW REQUEST ===")
+    print(f"Method: {request.method}, Path: {path}")
+
+    # # Исключение для API-запросов
+    # if path.startswith('api/'):
+    #     print("API route not handled - returning 404")
+    #     raise HTTPException(status_code=404, detail="Not Found")
+    
+    if IS_PROD:
+        print("Serving production index.html")
+        return FileResponse("../frontend/dist/index.html")
+    
+    vite_url = f"http://localhost:5173/{path}"
+    print(f"Proxying to Vite: {vite_url}")
+
+    try:
+        if request.method == "GET":
+            print("Redirecting GET request to Vite")
+            return RedirectResponse(vite_url)
+        
+        async with httpx.AsyncClient() as client:
+            print(f"Proxying {request.method} request to Vite")
+            response = await client.request(
+                request.method,
+                vite_url,
+                headers={k: v for k, v in request.headers.items() if k.lower() != "host"},
+                params=request.query_params,
+                data=await request.body()
+            )
+            return RedirectResponse(vite_url)
+            
+    except httpx.ConnectError:
+        print("Vite server is not running!")
+        return {"detail": "Vite server is not running - please run 'npm run dev'"}
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        return {"detail": "Internal server error"}
