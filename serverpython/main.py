@@ -29,6 +29,7 @@ class ParsedMessage(BaseModel):
     group: str
     message: str
 
+database = {}
 
 def sanitize_string(input_string: str) -> str:
     """Удаляем потенциально опасные символы"""
@@ -50,36 +51,55 @@ async def parse_message(input_string: str):
     print("Custom /api/parse handler called")
     try:
         # Разделяем timestamp и остальную часть
+        #timestamp, rest = input_string.split('*', 1)
         timestamp_part, rest = input_string.split('*', 1)
         timestamp = float(timestamp_part)
         
         # Разбираем остальную часть: команда, username, группа, сообщение
         parts = rest.split(maxsplit=3)
-        
-        if len(parts) < 3:
+        if len(parts) == 0:
             raise ValueError("Недостаточно частей в строке после timestamp")
         
-        # Первое слово после * - это команда+username
-        command_user = parts[0]
+        name_command = parts[0][:3]  # "доб"
+
+        if name_command == "доб":
+
+
+
+            if len(parts) < 3:
+                raise ValueError("Недостаточно частей в строке после timestamp")
+            
+            # Первое слово после * - это команда+username
+            command_user = parts[0]
+            
+            # Разделяем команду и username (первые 3 символа - команда, остальное - username)
+            #name_command = command_user[:3]  # "доб"
+            username = command_user[3:]      # "test"
+            
+            group_name = parts[1]            # "A"
+            message = parts[2] if len(parts) == 3 else parts[2] + ' ' + parts[3]
+            
+            # return ParsedMessage(
+            #     timestamp=timestamp,
+            #     name_command=name_command,#sanitize_string(name_command),
+            #     username=username,
+            #     group_name=group_name,
+            #     message=message
+            # )
+            print (timestamp,username,group_name,message)
+            #database[timestamp]={'user':username,'group':group_name,'message':message}
+            database[timestamp]=username,group_name,message
+            return "данные добавлены"
         
-        # Разделяем команду и username (первые 3 символа - команда, остальное - username)
-        name_command = command_user[:3]  # "доб"
-        username = command_user[3:]      # "test"
-        
-        group_name = parts[1]            # "A"
-        message = parts[2] if len(parts) == 3 else parts[2] + ' ' + parts[3]
-        
-        return ParsedMessage(
-            timestamp=timestamp,
-            name_command=sanitize_string(name_command),
-            username=sanitize_string(username),
-            group_name=sanitize_string(group_name),
-            message=sanitize_string(message)
-        )
+        return "ошибка команды"
         
     except Exception as e:
         return {"error": f"Ошибка парсинга: {str(e)}", "input": input_string}
-
+    
+@app.get("/api/newdata")
+async def longpool():
+    #all data, наверное можно было заморочится, но данных мало.
+    return database
 
 @app.api_route("/{path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"])
 async def catch_all(request: Request, path: str):

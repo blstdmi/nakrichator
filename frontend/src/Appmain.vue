@@ -54,6 +54,7 @@ function saycommand_showmenu(userid=undefined){
 
 
   setTimeout(i=> saycommand_show.value  = false,1000*6)
+
 }
 </script>
 
